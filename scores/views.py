@@ -5,32 +5,70 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.db.models import Sum, F
 from django.http import JsonResponse
+from django.conf import settings
 from .models import Team, ScoreEntry, TeamColor
 from .forms import ScoreEntryForm, TeamColorForm, TeamForm
 
 
-def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
+def debug_view(request):
+    """Debug view to check system status"""
+    try:
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            db_status = "OK"
+    except Exception as e:
+        db_status = f"Error: {str(e)}"
     
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, f"Welcome back, {username}!")
-                return redirect('dashboard')
+    try:
+        from django.contrib.auth.models import User
+        user_count = User.objects.count()
+    except Exception as e:
+        user_count = f"Error: {str(e)}"
+    
+    return JsonResponse({
+        'status': 'debug_info',
+        'database': db_status,
+        'user_count': user_count,
+        'debug_mode': settings.DEBUG,
+        'allowed_hosts': settings.ALLOWED_HOSTS,
+        'database_config': {
+            'engine': settings.DATABASES['default']['ENGINE'],
+            'name': str(settings.DATABASES['default']['NAME'])
+        }
+    })
+
+
+def login_view(request):
+    try:
+        if request.user.is_authenticated:
+            return redirect('dashboard')
+        
+        if request.method == 'POST':
+            form = AuthenticationForm(request, data=request.POST)
+            if form.is_valid():
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password')
+                user = authenticate(username=username, password=password)
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, f"Welcome back, {username}!")
+                    return redirect('dashboard')
+                else:
+                    messages.error(request, "Invalid username or password.")
             else:
                 messages.error(request, "Invalid username or password.")
         else:
-            messages.error(request, "Invalid username or password.")
-    else:
-        form = AuthenticationForm()
-    
-    return render(request, 'scores/login.html', {'form': form})
+            form = AuthenticationForm()
+        
+        return render(request, 'scores/login.html', {'form': form})
+    except Exception as e:
+        # Log the error for debugging
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Login view error: {str(e)}")
+        messages.error(request, "An error occurred. Please try again.")
+        return render(request, 'scores/login.html', {'form': AuthenticationForm()})
 
 
 @login_required

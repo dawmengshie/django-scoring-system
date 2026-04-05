@@ -80,6 +80,9 @@ if os.getenv('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
     }
+    # Ensure database connection is secure for PostgreSQL
+    DATABASES['default'].setdefault('OPTIONS', {})
+    DATABASES['default']['OPTIONS']['sslmode'] = 'require'
 else:
     DATABASES = {
         'default': {
@@ -87,11 +90,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-# Ensure database connection is secure
-if not DEBUG:
-    DATABASES['default'].setdefault('OPTIONS', {})
-    DATABASES['default']['OPTIONS'].setdefault('sslmode', 'require')
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

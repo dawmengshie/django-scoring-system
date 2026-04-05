@@ -15,8 +15,6 @@ services:
         fromDatabase:
           name: scoring-db
           property: connectionString
-      - key: ALLOWED_HOSTS
-        value: "django-scoring-system.onrender.com,localhost,127.0.0.1"
 
 databases:
   - name: scoring-db

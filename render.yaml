@@ -4,11 +4,11 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn scoring_system.wsgi:application
-    healthCheckPath: /
+    healthCheckPath: /health/
     postDeployCommand: python manage.py migrate && python manage.py create_production_users
     envVars:
       - key: DEBUG
-        value: False
+        value: "False"
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
@@ -16,7 +16,7 @@ services:
           name: scoring-db
           property: connectionString
       - key: ALLOWED_HOSTS
-        value: django-scoring-system.onrender.com
+        value: "*.onrender.com,localhost,127.0.0.1"
 
 databases:
   - name: scoring-db

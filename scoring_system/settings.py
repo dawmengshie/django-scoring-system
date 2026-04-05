@@ -26,7 +26,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-%dooznnrdpdlq0s+t_2304sa=3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Handle ALLOWED_HOSTS properly
+allowed_hosts_str = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',') if host.strip()]
 
 # Application definition
 INSTALLED_APPS = [
@@ -85,6 +87,11 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+# Ensure database connection is secure
+if not DEBUG:
+    DATABASES['default'].setdefault('OPTIONS', {})
+    DATABASES['default']['OPTIONS'].setdefault('sslmode', 'require')
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

@@ -1,0 +1,164 @@
+{% extends 'scores/base.html' %}
+
+{% block title %}{{ team.name }} - CRCCIMI FAMILY CAMP{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="mb-8">
+        <a href="{% url 'scoreboard' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            ← Back to Scoreboard
+        </a>
+        <div class="flex items-center mt-4">
+            <div class="w-12 h-12 rounded-full mr-4" style="background-color: {{ team.color.color_code }};"></div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{{ team.name }}</h1>
+                <p class="text-gray-600">{{ team.color.name }} Team</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Total Score</h3>
+            <p class="text-3xl font-bold text-blue-600">{{ team.get_total_score }}</p>
+            <p class="text-sm text-gray-500">points</p>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Total Entries</h3>
+            <p class="text-3xl font-bold text-gray-900">{{ entries.count }}</p>
+            <p class="text-sm text-gray-500">score entries</p>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Team Color</h3>
+            <div class="flex items-center mt-2">
+                <div class="w-8 h-8 rounded-full mr-3" style="background-color: {{ team.color.color_code }};"></div>
+                <span class="text-lg font-medium text-gray-900">{{ team.color.name }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Score History -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">Score History</h2>
+        </div>
+        <div class="p-6">
+            {% if entries %}
+                <div class="space-y-4">
+                    {% for entry in entries %}
+                        <div class="flex items-center justify-between py-4 border-b border-gray-200 last:border-b-0">
+                            <div class="flex items-center flex-1">
+                                <div class="flex-shrink-0">
+                                    {% if entry.score_type == 'merit' %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                            +{{ entry.points }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                            {{ entry.points }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <p class="text-sm font-medium text-gray-900">
+                                        {{ entry.score_type|title }}
+                                    </p>
+                                    <p class="text-sm text-gray-600">{{ entry.description }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right ml-4">
+                                <p class="text-sm text-gray-500">{{ entry.date|date:"M d, Y H:i" }}</p>
+                                {% if entry.recorded_by %}
+                                    <p class="text-xs text-gray-400">by {{ entry.recorded_by.username }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No score entries</h3>
+                    <p class="mt-1 text-sm text-gray-500">This team hasn't received any merits or demerits yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+        <a href="{% url 'add_merit' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition duration-200">
+            Add Merit to {{ team.name }}
+        </a>
+        <a href="{% url 'add_demerit' %}" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md text-sm font-medium transition duration-200">
+            Add Demerit to {{ team.name }}
+        </a>
+        {% if user.is_staff %}
+            <button onclick="confirmReset()" class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-md text-sm font-medium transition duration-200">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m0 0V9m0 0h5.582m-4.414 2L4 16m12 0l-4.168-4.168A8.001 8.001 0 0018.582 9"></path>
+                </svg>
+                Reset {{ team.name }} Scores
+            </button>
+        {% endif %}
+    </div>
+
+    <!-- Confirmation Modal -->
+    {% if user.is_staff %}
+    <div id="resetModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Reset Team Scores</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Are you sure you want to reset all scores for <strong>{{ team.name }}</strong>?
+                    </p>
+                    <p class="text-sm text-red-600 mt-2">
+                        This action cannot be undone and will delete all merits and demerits for this team.
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <form method="post" action="{% url 'reset_team_scores' team.id %}">
+                        {% csrf_token %}
+                        <div class="flex space-x-4">
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition duration-200">
+                                Yes, Reset Scores
+                            </button>
+                            <button type="button" onclick="closeModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition duration-200">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmReset() {
+            document.getElementById('resetModal').classList.remove('hidden');
+        }
+        
+        function closeModal() {
+            document.getElementById('resetModal').classList.add('hidden');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('resetModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+    {% endif %}
+{% endblock %}

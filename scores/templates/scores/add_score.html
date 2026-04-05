@@ -1,0 +1,130 @@
+{% extends 'scores/base.html' %}
+
+{% block title %}{{ title }} - CRCCIMI FAMILY CAMP{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="mb-8">
+        <a href="{% url 'dashboard' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            ← Back to Dashboard
+        </a>
+        <h1 class="text-3xl font-bold text-gray-900 mt-2">{{ title }}</h1>
+        <p class="mt-2 text-gray-600">
+            {% if score_type == 'merit' %}
+                Award positive points to a team for good behavior, participation, or achievements.
+            {% else %}
+                Assign negative points to a team for rule violations or poor behavior.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">
+                {% if score_type == 'merit' %}
+                    🏆 Add Merit Points
+                {% else %}
+                    ⚠️ Add Demerit Points
+                {% endif %}
+            </h2>
+        </div>
+        <div class="p-6">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.team.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Team *
+                        </label>
+                        {{ form.team }}
+                        {% if form.team.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.team.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.points.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            Points *
+                        </label>
+                        {{ form.points }}
+                        {% if form.points.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.points.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-sm text-gray-500">
+                            {% if score_type == 'merit' %}
+                                Enter any positive amount of points to add to the team's score.
+                            {% else %}
+                                Enter any positive amount of points to subtract from the team's score.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        Description * (Reason for points)
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-sm text-gray-500">
+                        Provide a clear reason for awarding these points. This will be visible in the activity log.
+                    </p>
+                </div>
+
+                <div class="mt-8 flex justify-end space-x-4">
+                    <a href="{% url 'dashboard' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-md text-sm font-medium transition duration-200">
+                        Cancel
+                    </a>
+                    <button type="submit" class="{% if score_type == 'merit' %}bg-green-600 hover:bg-green-700{% else %}bg-red-600 hover:bg-red-700{% endif %} text-white px-6 py-2 rounded-md text-sm font-medium transition duration-200">
+                        {% if score_type == 'merit' %}
+                            Add Merit
+                        {% else %}
+                            Add Demerit
+                        {% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Quick Actions</h3>
+            <div class="space-y-2">
+                <a href="{% url 'scoreboard' %}" class="block text-blue-600 hover:text-blue-800 text-sm">
+                    📊 View Scoreboard
+                </a>
+                {% if score_type == 'merit' %}
+                    <a href="{% url 'add_demerit' %}" class="block text-red-600 hover:text-red-800 text-sm">
+                        ⚠️ Add Demerit Instead
+                    </a>
+                {% else %}
+                    <a href="{% url 'add_merit' %}" class="block text-green-600 hover:text-green-800 text-sm">
+                        🏆 Add Merit Instead
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Tips</h3>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li>• Be specific in descriptions</li>
+                <li>• Keep points reasonable (1-100)</li>
+                <li>• Award points fairly</li>
+            </ul>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Recent Activity</h3>
+            <p class="text-sm text-gray-600">
+                Check the dashboard for recent score entries and team rankings.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

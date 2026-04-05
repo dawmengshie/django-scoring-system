@@ -1,0 +1,102 @@
+{% extends 'scores/base.html' %}
+
+{% block title %}Edit Team - CRCCIMI FAMILY CAMP{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6 sm:py-8 lg:py-10 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="text-center mb-8 sm:mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-2xl shadow-lg mb-3 sm:mb-4 lg:mb-6 p-2">
+            <img src="/static/logo.png" alt="CRCCIMI FAMILY CAMP Logo" class="w-full h-full object-contain">
+        </div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Edit Team</h1>
+        <p class="text-sm sm:text-base text-gray-600">Modify the team details</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mb-6">
+        <a href="{% url 'manage_colors' %}" class="inline-flex items-center text-gray-600 hover:text-gray-900 text-sm sm:text-base font-medium">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Manage Colors
+        </a>
+    </div>
+
+    <!-- Current Team Info -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div class="flex items-center">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full mr-4" style="background-color: {{ team.color.color_code }};"></div>
+            <div>
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-900">{{ team.name }}</h3>
+                <p class="text-sm sm:text-base text-gray-600">Current color: {{ team.color.name }} ({{ team.color.color_code }})</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-white flex items-center">
+                <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Edit Team Details
+            </h2>
+        </div>
+        <div class="p-4 sm:p-6 lg:p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Name Field -->
+                <div>
+                    <label for="{{ form.name.id_for_label }}" class="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                        Team Name <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.name.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <p class="mt-2 text-xs sm:text-sm text-gray-500">Enter the team name</p>
+                </div>
+
+                <!-- Color Field -->
+                <div>
+                    <label for="{{ form.color.id_for_label }}" class="block text-sm sm:text-base font-medium text-gray-700 mb-2">
+                        Team Color <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.color }}
+                    {% if form.color.errors %}
+                        <div class="mt-2 text-sm text-red-600">
+                            {% for error in form.color.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <p class="mt-2 text-xs sm:text-sm text-gray-500">Select a color for this team</p>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                    <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Update Team
+                    </button>
+                    <a href="{% url 'manage_colors' %}" class="flex-1 inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white text-sm sm:text-base font-medium rounded-lg hover:bg-gray-700 transition-all duration-300">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

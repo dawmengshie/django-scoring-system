@@ -1,0 +1,248 @@
+{% extends 'scores/base.html' %}
+
+{% block title %}Scoreboard - CRCCIMI YOUTH CAMP{% endblock %}
+
+{% block content %}
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        position: relative;
+    }
+    
+    .glass-card {
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .glass-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.15);
+    }
+    
+    .podium-first {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        transform: scale(1.05);
+    }
+    
+    .podium-second {
+        background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    }
+    
+    .podium-third {
+        background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+    
+    .animate-slide-up {
+        animation: slideUp 0.6s ease-out;
+    }
+    
+    .animate-bounce {
+        animation: bounce 2s infinite;
+    }
+    
+    .floating-decoration {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.1;
+    }
+    
+    .rank-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+</style>
+
+<div class="gradient-bg">
+    <!-- Background decorations -->
+    <div class="floating-decoration w-32 h-32 bg-purple-300" style="top: 10%; right: 5%;"></div>
+    <div class="floating-decoration w-40 h-40 bg-blue-300" style="bottom: 20%; left: 8%;"></div>
+    <div class="floating-decoration w-24 h-24 bg-indigo-300" style="top: 50%; right: 15%;"></div>
+
+    <div class="px-4 py-6 sm:py-8 lg:py-10 sm:px-6 lg:px-8">
+        <!-- Header Section -->
+        <div class="text-center mb-8 sm:mb-10 lg:mb-12 animate-slide-up">
+            <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-2xl shadow-lg mb-3 sm:mb-4 lg:mb-6 p-2">
+                <img src="/static/logo.png" alt="CRCCIMI FAMILY CAMP Logo" class="w-full h-full object-contain">
+            </div>
+            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">CRCCIMI FAMILY CAMP</h1>
+            <h2 class="text-xl sm:text-2xl lg:text-3xl font-semibold text-white/90 mb-2">Live Scoreboard</h2>
+            <p class="text-sm sm:text-base text-white/80">Real-time team rankings and competition standings</p>
+        </div>
+
+        {% if teams %}
+            <!-- Podium Section -->
+            {% if teams|length >= 3 %}
+                <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden mb-8 sm:mb-12 animate-slide-up" style="animation-delay: 0.1s;">
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                        <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-white flex items-center justify-center">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Top 3 Teams
+                        </h2>
+                    </div>
+                    <div class="p-4 sm:p-6 lg:p-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                            <!-- Second Place -->
+                            <div class="text-center order-2 sm:order-1">
+                                <div class="podium-second rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 glass-card transform hover:scale-105 transition-all duration-300">
+                                    <div class="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-3">🥈</div>
+                                    <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 team-{{ teams.1.color }} rounded-full mx-auto mb-3 sm:mb-4 shadow-lg ring-4 ring-white/20"></div>
+                                    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2">{{ teams.1.name }}</h3>
+                                    <p class="text-2xl sm:text-3xl font-bold text-gray-700 mb-1">{{ teams.1.total_score|default:0 }}</p>
+                                    <p class="text-xs sm:text-sm text-gray-500">points</p>
+                                    <div class="mt-3 sm:mt-4 inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-gray-100 text-gray-800">
+                                        2nd Place
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- First Place -->
+                            <div class="text-center order-1 sm:order-2">
+                                <div class="podium-first rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 glass-card transform hover:scale-105 transition-all duration-300 shadow-xl">
+                                    <div class="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-3">🥇</div>
+                                    <div class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 team-{{ teams.0.color }} rounded-full mx-auto mb-3 sm:mb-4 shadow-xl ring-4 ring-yellow-300/50 animate-bounce"></div>
+                                    <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-2">{{ teams.0.name }}</h3>
+                                    <p class="text-3xl sm:text-4xl font-bold rank-gradient mb-1">{{ teams.0.total_score|default:0 }}</p>
+                                    <p class="text-xs sm:text-sm text-gray-500">points</p>
+                                    <div class="mt-3 sm:mt-4 inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-yellow-100 text-yellow-800">
+                                        🏆 Champion
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Third Place -->
+                            <div class="text-center order-3 sm:order-3">
+                                <div class="podium-third rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 glass-card transform hover:scale-105 transition-all duration-300">
+                                    <div class="text-3xl sm:text-4xl lg:text-5xl mb-2 sm:mb-3">🥉</div>
+                                    <div class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 team-{{ teams.2.color }} rounded-full mx-auto mb-3 sm:mb-4 shadow-lg ring-4 ring-white/20"></div>
+                                    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2">{{ teams.2.name }}</h3>
+                                    <p class="text-2xl sm:text-3xl font-bold text-gray-700 mb-1">{{ teams.2.total_score|default:0 }}</p>
+                                    <p class="text-xs sm:text-sm text-gray-500">points</p>
+                                    <div class="mt-3 sm:mt-4 inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-orange-100 text-orange-800">
+                                        3rd Place
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Full Rankings Table -->
+            <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden animate-slide-up" style="animation-delay: 0.3s;">
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-white flex items-center">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0v4m0 0v4m0-4h6m-6 4h6m-6 4h6"></path>
+                            </svg>
+                            Complete Rankings
+                        </h2>
+                        <a href="{% url 'dashboard' %}" class="text-white/90 hover:text-white text-sm sm:text-base font-medium flex items-center mt-2 sm:mt-0">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                            Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-full sm:min-w-0">
+                        <thead class="bg-gray-50/50">
+                            <tr>
+                                <th class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700 uppercase tracking-wider">Rank</th>
+                                <th class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700 uppercase tracking-wider">Team</th>
+                                <th class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700 uppercase tracking-wider">Color</th>
+                                <th class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700 uppercase tracking-wider">Total Score</th>
+                                <th class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-700 uppercase tracking-wider hidden sm:table-cell">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200/50">
+                            {% for team in teams %}
+                                <tr class="hover:bg-gray-50/50 transition-colors duration-200">
+                                    <td class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            {% if forloop.counter == 1 %}
+                                                <span class="text-xl sm:text-2xl">🥇</span>
+                                            {% elif forloop.counter == 2 %}
+                                                <span class="text-lg sm:text-xl">🥈</span>
+                                            {% elif forloop.counter == 3 %}
+                                                <span class="text-lg sm:text-xl">🥉</span>
+                                            {% else %}
+                                                <span class="text-base sm:text-lg font-bold text-gray-500">{{ forloop.counter }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="text-sm sm:text-base font-medium text-gray-900">{{ team.name }}</div>
+                                    </td>
+                                    <td class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full mr-2 sm:mr-3" style="background-color: {{ team.color.color_code }};"></div>
+                                            <span class="text-sm sm:text-base text-gray-900">{{ team.color.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                        <span class="text-base sm:text-lg font-bold {% if forloop.counter <= 3 %}rank-gradient{% else %}text-gray-900{% endif %}">
+                                            {{ team.total_score|default:0 }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap text-sm sm:text-base font-medium hidden sm:table-cell">
+                                        <a href="{% url 'team_details' team.id %}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                                            <svg class="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.522 5 12 5s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 16.057.458 12zM14 10a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                            </svg>
+                                            <span class="hidden sm:inline">View Details</span>
+                                            <span class="sm:hidden">View</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="glass-card rounded-xl sm:rounded-2xl p-6 sm:p-8 lg:p-12 text-center animate-slide-up">
+                <svg class="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 mx-auto text-gray-400 mb-4 sm:mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">No Teams Found</h3>
+                <p class="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Get started by adding teams to scoring system to see rankings here.</p>
+                <a href="{% url 'dashboard' %}" class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Go to Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

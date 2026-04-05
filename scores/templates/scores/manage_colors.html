@@ -1,0 +1,138 @@
+{% extends 'scores/base.html' %}
+
+{% block title %}Manage Team Colors - CRCCIMI FAMILY CAMP{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6 sm:py-8 lg:py-10 sm:px-6 lg:px-8">
+    <!-- Header Section -->
+    <div class="text-center mb-8 sm:mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-2xl shadow-lg mb-3 sm:mb-4 lg:mb-6 p-2">
+            <img src="/static/logo.png" alt="CRCCIMI FAMILY CAMP Logo" class="w-full h-full object-contain">
+        </div>
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">Manage Team Colors</h1>
+        <p class="text-sm sm:text-base text-gray-600">Create and manage team colors for the scoring system</p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+        <a href="{% url 'add_team_color' %}" class="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm sm:text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add New Team Color
+        </a>
+        <a href="{% url 'dashboard' %}" class="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white text-sm sm:text-base font-medium rounded-lg hover:bg-gray-700 transition-all duration-300">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Team Colors Section -->
+    <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-white flex items-center">
+                <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                </svg>
+                Team Colors
+            </h2>
+        </div>
+        <div class="p-4 sm:p-6 lg:p-8">
+            {% if team_colors %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {% for color in team_colors %}
+                        <div class="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-3" style="background-color: {{ color.color_code }};"></div>
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">{{ color.name }}</h3>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'edit_team_color' color.id %}" class="text-blue-600 hover:text-blue-800">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="{% url 'delete_team_color' color.id %}" class="text-red-600 hover:text-red-800">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="text-xs sm:text-sm text-gray-500">
+                                <span class="font-mono">{{ color.color_code }}</span>
+                                {% if color.teams.count %}
+                                    <span class="ml-2 text-green-600">• {{ color.teams.count }} team{{ color.teams.count|pluralize }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 sm:py-12">
+                    <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                    </svg>
+                    <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">No Team Colors Found</h3>
+                    <p class="text-sm sm:text-base text-gray-600">Get started by adding your first team color.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Teams Section -->
+    <div class="glass-card rounded-xl sm:rounded-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-white flex items-center">
+                <svg class="w-4 h-4 sm:w-6 sm:h-6 mr-2 sm:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Teams
+            </h2>
+        </div>
+        <div class="p-4 sm:p-6 lg:p-8">
+            {% if teams %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {% for team in teams %}
+                        <div class="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-3" style="background-color: {{ team.color.color_code }};"></div>
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900">{{ team.name }}</h3>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'edit_team' team.id %}" class="text-blue-600 hover:text-blue-800">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="{% url 'delete_team' team.id %}" class="text-red-600 hover:text-red-800">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="text-xs sm:text-sm text-gray-500">
+                                Color: <span class="font-medium text-gray-700">{{ team.color.name }}</span>
+                                <span class="ml-2 font-mono">{{ team.color.color_code }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8 sm:py-12">
+                    <svg class="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">No Teams Found</h3>
+                    <p class="text-sm sm:text-base text-gray-600">Create team colors first, then add teams to the system.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,27 +9,61 @@ from .models import Team, ScoreEntry, TeamColor
 from .forms import ScoreEntryForm, TeamColorForm, TeamForm
 
 
+def test_view(request):
+    """Simple test view to isolate 400 error"""
+    print(f"DEBUG: test_view called with method: {request.method}")
+    print(f"DEBUG: Path: {request.path}")
+    print(f"DEBUG: Headers: {dict(request.headers)}")
+    
+    if request.method == 'GET':
+        return JsonResponse({
+            'status': 'ok',
+            'message': 'Test view working',
+            'method': request.method,
+            'path': request.path
+        })
+    elif request.method == 'POST':
+        print(f"DEBUG: POST data: {request.POST}")
+        return JsonResponse({
+            'status': 'ok',
+            'message': 'POST received',
+            'data': dict(request.POST)
+        })
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+
 def login_view(request):
+    print(f"DEBUG: login_view called with method: {request.method}")
+    print(f"DEBUG: User authenticated: {request.user.is_authenticated}")
+    
     if request.user.is_authenticated:
         return redirect('dashboard')
     
     if request.method == 'POST':
+        print(f"DEBUG: POST data: {request.POST}")
         form = AuthenticationForm(request, data=request.POST)
+        print(f"DEBUG: Form valid: {form.is_valid()}")
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
+            print(f"DEBUG: Attempting login for user: {username}")
             user = authenticate(username=username, password=password)
             if user is not None:
+                print(f"DEBUG: Authentication successful for user: {username}")
                 login(request, user)
                 messages.success(request, f"Welcome back, {username}!")
                 return redirect('dashboard')
             else:
+                print(f"DEBUG: Authentication failed for user: {username}")
                 messages.error(request, "Invalid username or password.")
         else:
-            messages.error(request, "Invalid username or password.")
+            print(f"DEBUG: Form errors: {form.errors}")
+            messages.error(request, "Invalid form data.")
     else:
         form = AuthenticationForm()
     
+    print(f"DEBUG: Rendering login form")
     return render(request, 'scores/login.html', {'form': form})
 
 

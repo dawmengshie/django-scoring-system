@@ -57,60 +57,23 @@ def debug_view(request):
 
 
 def login_view(request):
-    try:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(f"Login view called - Method: {request.method}")
+    """Simple working login view"""
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
         
-        if request.user.is_authenticated:
-            logger.info(f"User already authenticated: {request.user.username}")
+        from django.contrib.auth import authenticate, login
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
             return redirect('dashboard')
-        
-        if request.method == 'POST':
-            logger.info(f"Processing POST request")
-            logger.info(f"POST data keys: {list(request.POST.keys())}")
-            
-            form = AuthenticationForm(request, data=request.POST)
-            logger.info(f"Form created, is_valid: {form.is_valid()}")
-            
-            if not form.is_valid():
-                logger.error(f"Form validation failed: {form.errors}")
-                for field, errors in form.errors.items():
-                    logger.error(f"Field {field}: {errors}")
-                messages.error(request, "Invalid username or password.")
-                return render(request, 'scores/login.html', {'form': form})
-            
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            logger.info(f"Attempting authentication for user: {username}")
-            
-            user = authenticate(username=username, password=password)
-            logger.info(f"Authentication result: {user}")
-            
-            if user is not None:
-                logger.info(f"Login successful for user: {username}")
-                login(request, user)
-                messages.success(request, f"Welcome back, {username}!")
-                return redirect('dashboard')
-            else:
-                logger.error(f"Authentication failed for user: {username}")
-                messages.error(request, "Invalid username or password.")
         else:
-            logger.info("Rendering GET login form")
-            form = AuthenticationForm()
-        
-        return render(request, 'scores/login.html', {'form': form})
-        
-    except Exception as e:
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Login view exception: {type(e).__name__}: {str(e)}")
-        logger.error(f"Exception details: {repr(e)}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        
-        messages.error(request, "An error occurred. Please try again.")
-        return render(request, 'scores/login.html', {'form': AuthenticationForm()})
+            messages.error(request, "Invalid username or password")
+    
+    from django.contrib.auth.forms import AuthenticationForm
+    form = AuthenticationForm()
+    return render(request, 'scores/login.html', {'form': form})
 
 
 @login_required

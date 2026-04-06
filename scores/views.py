@@ -23,13 +23,30 @@ def debug_view(request):
     try:
         from django.contrib.auth.models import User
         user_count = User.objects.count()
+        
+        # Check specific users
+        staff_users = ['sammy', 'nicos', 'Jerome', 'Adrian', 'admin']
+        user_status = {}
+        for username in staff_users:
+            try:
+                user = User.objects.get(username=username)
+                user_status[username] = {
+                    'exists': True,
+                    'is_staff': user.is_staff,
+                    'is_active': user.is_active,
+                    'is_superuser': user.is_superuser
+                }
+            except User.DoesNotExist:
+                user_status[username] = {'exists': False}
     except Exception as e:
         user_count = f"Error: {str(e)}"
+        user_status = {}
     
     return JsonResponse({
         'status': 'debug_info',
         'database': db_status,
         'user_count': user_count,
+        'user_status': user_status,
         'debug_mode': settings.DEBUG,
         'allowed_hosts': settings.ALLOWED_HOSTS,
         'database_config': {
@@ -41,32 +58,57 @@ def debug_view(request):
 
 def login_view(request):
     try:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Login view called - Method: {request.method}")
+        
         if request.user.is_authenticated:
+            logger.info(f"User already authenticated: {request.user.username}")
             return redirect('dashboard')
         
         if request.method == 'POST':
+            logger.info(f"Processing POST request")
+            logger.info(f"POST data keys: {list(request.POST.keys())}")
+            
             form = AuthenticationForm(request, data=request.POST)
-            if form.is_valid():
-                username = form.cleaned_data.get('username')
-                password = form.cleaned_data.get('password')
-                user = authenticate(username=username, password=password)
-                if user is not None:
-                    login(request, user)
-                    messages.success(request, f"Welcome back, {username}!")
-                    return redirect('dashboard')
-                else:
-                    messages.error(request, "Invalid username or password.")
+            logger.info(f"Form created, is_valid: {form.is_valid()}")
+            
+            if not form.is_valid():
+                logger.error(f"Form validation failed: {form.errors}")
+                for field, errors in form.errors.items():
+                    logger.error(f"Field {field}: {errors}")
+                messages.error(request, "Invalid username or password.")
+                return render(request, 'scores/login.html', {'form': form})
+            
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            logger.info(f"Attempting authentication for user: {username}")
+            
+            user = authenticate(username=username, password=password)
+            logger.info(f"Authentication result: {user}")
+            
+            if user is not None:
+                logger.info(f"Login successful for user: {username}")
+                login(request, user)
+                messages.success(request, f"Welcome back, {username}!")
+                return redirect('dashboard')
             else:
+                logger.error(f"Authentication failed for user: {username}")
                 messages.error(request, "Invalid username or password.")
         else:
+            logger.info("Rendering GET login form")
             form = AuthenticationForm()
         
         return render(request, 'scores/login.html', {'form': form})
+        
     except Exception as e:
-        # Log the error for debugging
         import logging
         logger = logging.getLogger(__name__)
-        logger.error(f"Login view error: {str(e)}")
+        logger.error(f"Login view exception: {type(e).__name__}: {str(e)}")
+        logger.error(f"Exception details: {repr(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        
         messages.error(request, "An error occurred. Please try again.")
         return render(request, 'scores/login.html', {'form': AuthenticationForm()})
 

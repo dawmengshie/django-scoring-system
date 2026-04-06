@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - CRCCIMI</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .card { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .button { background: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CRCCIMI FAMILY CAMP</h1>
+        <p>Basic Dashboard</p>
+    </div>
+    
+    <div class="card">
+        <h2>Welcome!</h2>
+        <p>You are successfully logged in as: <strong>{{ user.username }}</strong></p>
+        <p>User ID: {{ user.id }}</p>
+        <p>Staff: {{ user.is_staff }}</p>
+        <p>Active: {{ user.is_active }}</p>
+    </div>
+    
+    <div class="card">
+        <h3>System Status</h3>
+        <p>✅ Authentication working</p>
+        <p>✅ Sessions working</p>
+        <p>✅ Templates working</p>
+        <p>✅ Database working</p>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="/logout/" class="button">Logout</a>
+    </div>
+</body>
+</html>

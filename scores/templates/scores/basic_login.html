@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Basic Login - CRCCIMI</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 8px; border: 1px solid #ccc; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .error { color: red; margin-bottom: 10px; }
+        .info { background: #f8f9fa; padding: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Basic Login</h1>
+    
+    <div class="info">
+        <p><strong>Test Accounts:</strong></p>
+        <p>sammy / sammy123</p>
+        <p>nicos / nicos123</p>
+        <p>Jerome / jerome123</p>
+        <p>Adrian / adrian123</p>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="error">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" name="username" required>
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    
+    <p style="margin-top: 20px;">
+        <a href="/test-auth/">Test Auth System</a> | 
+        <a href="/debug/">Debug Info</a>
+    </p>
+</body>
+</html>

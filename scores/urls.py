@@ -1,15 +1,19 @@
 from django.urls import path
 from . import views
 from . import simple_views
+from . import basic_views
 
 urlpatterns = [
     path('', views.login_view, name='login'),
+    path('basic/', basic_views.basic_login, name='basic_login'),
     path('simple/', simple_views.simple_login, name='simple_login'),
     path('login/', views.login_view, name='login_redirect'),
     path('debug/', views.debug_view, name='debug'),
+    path('test-auth/', basic_views.test_auth, name='test_auth'),
     path('logout/', views.logout_view, name='logout'),
     
     path('dashboard/', views.dashboard, name='dashboard'),
+    path('basic-dashboard/', basic_views.basic_dashboard, name='basic_dashboard'),
     path('simple-dashboard/', simple_views.simple_dashboard, name='simple_dashboard'),
     path('scoreboard/', views.scoreboard, name='scoreboard'),
     

@@ -58,11 +58,19 @@ def debug_view(request):
 
 def login_view(request):
     if request.method == 'POST':
-        from django.contrib.auth import authenticate, login
-        user = authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
-        if user:
-            login(request, user)
-            return redirect('dashboard')
+        try:
+            from django.contrib.auth import authenticate, login
+            username = request.POST.get('username', '').strip()
+            password = request.POST.get('password', '')
+            
+            if username and password:
+                user = authenticate(request, username=username, password=password)
+                if user:
+                    login(request, user)
+                    return redirect('dashboard')
+        except Exception as e:
+            pass
+    
     from django.contrib.auth.forms import AuthenticationForm
     return render(request, 'scores/simple_login_standalone.html', {'form': AuthenticationForm()})
 

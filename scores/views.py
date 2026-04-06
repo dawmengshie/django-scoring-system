@@ -57,23 +57,13 @@ def debug_view(request):
 
 
 def login_view(request):
-    """Simple working login view"""
     if request.method == 'POST':
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-        
         from django.contrib.auth import authenticate, login
-        user = authenticate(request, username=username, password=password)
-        
-        if user is not None:
+        user = authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
+        if user:
             login(request, user)
             return redirect('dashboard')
-        else:
-            messages.error(request, "Invalid username or password")
-    
-    from django.contrib.auth.forms import AuthenticationForm
-    form = AuthenticationForm()
-    return render(request, 'scores/login.html', {'form': form})
+    return render(request, 'scores/login.html')
 
 
 @login_required

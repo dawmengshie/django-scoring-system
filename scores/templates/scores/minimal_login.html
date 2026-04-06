@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal Login</title>
+</head>
+<body>
+    <h1>Minimal Login Page</h1>
+    <p>If you can see this, the 500 error is fixed!</p>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

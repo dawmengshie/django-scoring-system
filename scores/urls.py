@@ -2,9 +2,14 @@ from django.urls import path
 from . import views
 from . import simple_views
 from . import basic_views
+from . import test_views
+from . import minimal_views
 
 urlpatterns = [
-    path('', views.login_view, name='login'),
+    path('', test_views.test_view, name='login'),
+    path('minimal/', minimal_views.minimal_login, name='minimal_login'),
+    path('real-login/', views.login_view, name='login'),
+    path('test500/', test_views.test_view, name='test500'),
     path('basic/', basic_views.basic_login, name='basic_login'),
     path('simple/', simple_views.simple_login, name='simple_login'),
     path('login/', views.login_view, name='login_redirect'),

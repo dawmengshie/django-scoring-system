@@ -64,7 +64,7 @@ def login_view(request):
             login(request, user)
             return redirect('dashboard')
     from django.contrib.auth.forms import AuthenticationForm
-    return render(request, 'scores/login.html', {'form': AuthenticationForm()})
+    return render(request, 'scores/simple_login_standalone.html', {'form': AuthenticationForm()})
 
 
 @login_required

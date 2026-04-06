@@ -63,7 +63,8 @@ def login_view(request):
         if user:
             login(request, user)
             return redirect('dashboard')
-    return render(request, 'scores/login.html')
+    from django.contrib.auth.forms import AuthenticationForm
+    return render(request, 'scores/login.html', {'form': AuthenticationForm()})
 
 
 @login_required

@@ -7,6 +7,7 @@ from . import minimal_views
 
 urlpatterns = [
     path('', views.login_view, name='login'),
+    path('login/', views.login_view, name='login_url'),
     path('minimal/', minimal_views.minimal_login, name='minimal_login'),
     path('test500/', test_views.test_view, name='test500'),
     path('basic/', basic_views.basic_login, name='basic_login'),
